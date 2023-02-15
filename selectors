@@ -1,0 +1,3 @@
+$$('[data-zone-name="price"] > div > a > div > span > span:first-of-type') - цены
+$$('[data-auto="product-title"]) - текст ссылки
+$$('._3ur4W') - граммы
