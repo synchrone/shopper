@@ -1,0 +1,39 @@
+{
+  "name": "Shopper",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "__MSG_description__",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "contextMenus",
+    "storage",
+    "webNavigation",
+    "<all_urls>"
+  ],
+  "content_security_policy": "default-src 'self'",
+  "options_ui": {
+    "page": "pages/options.html",
+    "open_in_tab": true
+  },
+  "default_locale": "en_US",
+  "commands": {
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://market.yandex.ru/"],
+      "js": ["js/content-page.js"]
+    }
+  ]
+}
