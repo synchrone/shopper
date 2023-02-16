@@ -32,7 +32,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://market.yandex.ru/"],
+      "matches": ["https://market.yandex.ru/*"],
       "js": ["js/content-page.js"]
     }
   ]
