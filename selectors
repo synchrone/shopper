@@ -2,7 +2,7 @@
 $$('[data-zone-name="price"] > div > a > div > span > span:first-of-type') - цены
 $$('[data-auto="product-title"]) - текст ссылки
 $$('._3ur4W') - граммы
-a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type').previousElement - цена за штуку
+a.querySelectorAll<HTMLElement>('[data-zone-name="price"]').previousElement - цена за штуку
 //Сбермаркет
 $$('[class^=ProductCardPrice_price]') - цена
 $$('[class^=ProductCard_volume]') - вес

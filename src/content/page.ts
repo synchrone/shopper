@@ -42,26 +42,44 @@ if (!window.shopperExtensionInstalled) {
     const observer = new MutationObserver((mutationList, observer) => {
         for (const mutation of mutationList) {
             mutation.addedNodes.forEach((a) => {
-                calculate(a as Element);
+                if(a instanceof Element){
+                    calculate(a);
+                }
             })
         }
     })
-    observer.observe(document.querySelector('[data-test-id="virtuoso-item-list"]')!, config);
-    setTimeout(calculate, 1000);
+    setTimeout(
+        () => { 
+            calculate(document); 
+            observer.observe(document.querySelector('[data-test-id="virtuoso-item-list"]')!, config);
+        }, 1000
+    );
     function calculate(a: Document|Element){
+        const parent_price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"]');
         const price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
         const mass = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
         price.forEach((m,i) => {
-            let innerPrice = parseFloat(m.innerText.replace(/ /g,""));
+            let innerPrice: any = 0;
+            if(parent_price[i].previousElementSibling instanceof HTMLElement){
+                if(parent_price[i].previousElementSibling?.classList.contains('g8jzv')){
+                    innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
+                }
+                else{
+                    innerPrice = parseFloat(m.innerText.replace(/ /g,""));
+                }
+            }
+            m.dataset.zoneName 
             let regular_mass = mass[i].title.match(/ ([\d.]+) (к?г)/);
+
             if(regular_mass == null){
                 return;
             }
             let innerMass = parseFloat(regular_mass[1]);
+            let result = 0;
             if (regular_mass[2] == "кг"){
                 innerMass*=1000;
-            }
-            let result = innerPrice/(innerMass/100);
+            }   
+            result = innerPrice/(innerMass/100);
             let result2 = result.toFixed(2).toString();
 
             m.closest('a')!.append(result2+'₽ за 100г');
