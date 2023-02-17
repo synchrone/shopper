@@ -61,11 +61,11 @@ if (!window.shopperExtensionInstalled) {
         price.forEach((m,i) => {
             let innerPrice: any = 0;
             if(parent_price[i].previousElementSibling instanceof HTMLElement){
-                if(parent_price[i].previousElementSibling?.classList.contains('g8jzv')){
-                    innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
+                if(parent_price[i].previousElementSibling?.prop('classList').length == 0){
+                    innerPrice = parseFloat(m.innerText.replace(/ /g,""));
                 }
                 else{
-                    innerPrice = parseFloat(m.innerText.replace(/ /g,""));
+                    innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
                 }
             }
             m.dataset.zoneName 
