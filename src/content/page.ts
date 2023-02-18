@@ -69,7 +69,7 @@ if (!window.shopperExtensionInstalled) {
             }
             m.dataset.zoneName 
             let regular_mass = mass[i].title.match(/ ([\d.]+) (к?г)/);
-            let regular_volume = mass[i].title.match(/ ([\d.]+) (л)/);
+            let regular_volume = mass[i].title.match(/ ([\d.]+) (м?л)/);
 
             if(regular_mass != null){
                 let innerMass = parseFloat(regular_mass![1]);
