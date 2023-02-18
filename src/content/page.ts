@@ -55,12 +55,12 @@ if (!window.shopperExtensionInstalled) {
         }, 1000
     );
     function calculate(a: Document|Element){
-        const parent_price: NodeListOf<HTMLElement> = a.querySelectorAll('[data-zone-name="price"]');
+        const parent_price = a.querySelectorAll('[data-zone-name="price"]');
         const price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
         const mass = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
         price.forEach((m,i) => {
-            let innerPrice: any = 0;
-            let parent_price2: any = parent_price[i].previousElementSibling; 
+            let innerPrice;
+            let parent_price2 = parent_price[i].previousElementSibling!; 
             if(parent_price2.classList.length > 0){
                 innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
             }
@@ -68,32 +68,23 @@ if (!window.shopperExtensionInstalled) {
                 innerPrice = parseFloat(m.innerText.replace(/ /g,""));
             }
             m.dataset.zoneName 
-            let regular_mass = mass[i].title.match(/ ([\d.]+) (к?г)/);
-            let regular_volume = mass[i].title.match(/ ([\d.]+) (м?л)/);
+            let regular_units = mass[i].title.match(/ ([\d.]+) ([км]?[гл])/);
 
-            if(regular_mass != null){
-                let innerMass = parseFloat(regular_mass![1]);
-                if (regular_mass![2] == "кг"){
-                    innerMass*=1000;
-                    let result = innerPrice/(innerMass/100);
-                    let result2 = result.toFixed(2).toString();
-    
-                    m.closest('a')!.append(result2+'₽ за 100г');
-                } 
-            }
-            else if (regular_volume != null){
-                let innerVolume = parseFloat(regular_volume![1]);
-              
-                if (regular_volume![2] == "л"){
-                    innerVolume*=1000;
-                    let result = innerPrice/(innerVolume/100);
-                    let result2 = result.toFixed(2).toString();
-
-                    m.closest('a')!.append(result2+'₽ за 100мл');
+            if(regular_units != null){
+                let innerMass = parseFloat(regular_units[1]);
+                let ending = '₽ за 100'+ regular_units[2];
+                if (regular_units[2] == "кг"){
+                    innerMass*=1000; 
+                    ending = '₽ за 100г'
                 }
-            }
-            else {
-                return;
+                if (regular_units[2] == "л"){
+                    innerMass*=1000;
+                    ending = '₽ за 100мл'
+                }
+                let result = innerPrice/(innerMass/100);
+                let result2 = result.toFixed(2).toString();
+
+                m.closest('a')!.append(result2+ending);
             }
         })
     }
