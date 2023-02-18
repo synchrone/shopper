@@ -55,18 +55,17 @@ if (!window.shopperExtensionInstalled) {
         }, 1000
     );
     function calculate(a: Document|Element){
-        const parent_price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"]');
+        const parent_price: NodeListOf<HTMLElement> = a.querySelectorAll('[data-zone-name="price"]');
         const price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
         const mass = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
         price.forEach((m,i) => {
             let innerPrice: any = 0;
-            if(parent_price[i].previousElementSibling instanceof HTMLElement){
-                if(parent_price[i].previousElementSibling?.prop('classList').length == 0){
-                    innerPrice = parseFloat(m.innerText.replace(/ /g,""));
-                }
-                else{
-                    innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
-                }
+            let parent_price2: any = parent_price[i].previousElementSibling; 
+            if(parent_price2.classList.length > 0){
+                innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
+            }
+            else{
+                innerPrice = parseFloat(m.innerText.replace(/ /g,""));
             }
             m.dataset.zoneName 
             let regular_mass = mass[i].title.match(/ ([\d.]+) (к?г)/);
@@ -75,11 +74,10 @@ if (!window.shopperExtensionInstalled) {
                 return;
             }
             let innerMass = parseFloat(regular_mass[1]);
-            let result = 0;
             if (regular_mass[2] == "кг"){
                 innerMass*=1000;
             }   
-            result = innerPrice/(innerMass/100);
+            let result = innerPrice/(innerMass/100);
             let result2 = result.toFixed(2).toString();
 
             m.closest('a')!.append(result2+'₽ за 100г');
