@@ -69,18 +69,32 @@ if (!window.shopperExtensionInstalled) {
             }
             m.dataset.zoneName 
             let regular_mass = mass[i].title.match(/ ([\d.]+) (к?г)/);
+            let regular_volume = mass[i].title.match(/ ([\d.]+) (л)/);
 
-            if(regular_mass == null){
+            if(regular_mass != null){
+                let innerMass = parseFloat(regular_mass![1]);
+                if (regular_mass![2] == "кг"){
+                    innerMass*=1000;
+                    let result = innerPrice/(innerMass/100);
+                    let result2 = result.toFixed(2).toString();
+    
+                    m.closest('a')!.append(result2+'₽ за 100г');
+                } 
+            }
+            else if (regular_volume != null){
+                let innerVolume = parseFloat(regular_volume![1]);
+              
+                if (regular_volume![2] == "л"){
+                    innerVolume*=1000;
+                    let result = innerPrice/(innerVolume/100);
+                    let result2 = result.toFixed(2).toString();
+
+                    m.closest('a')!.append(result2+'₽ за 100мл');
+                }
+            }
+            else {
                 return;
             }
-            let innerMass = parseFloat(regular_mass[1]);
-            if (regular_mass[2] == "кг"){
-                innerMass*=1000;
-            }   
-            let result = innerPrice/(innerMass/100);
-            let result2 = result.toFixed(2).toString();
-
-            m.closest('a')!.append(result2+'₽ за 100г');
         })
     }
 }
