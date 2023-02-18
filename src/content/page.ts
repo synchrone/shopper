@@ -68,7 +68,7 @@ if (!window.shopperExtensionInstalled) {
                 innerPrice = parseFloat(m.innerText.replace(/ /g,""));
             }
             m.dataset.zoneName 
-            let regular_units = mass[i].title.match(/ ([\d.]+) ([км]?[гл])/);
+            let regular_units = mass[i].title.match(/ ([\d.]+) ([км]?[гл]|шт)/);
 
             if(regular_units != null){
                 let innerMass = parseFloat(regular_units[1]);
@@ -82,6 +82,10 @@ if (!window.shopperExtensionInstalled) {
                     ending = '₽ за 100мл'
                 }
                 let result = innerPrice/(innerMass/100);
+                if (regular_units[2] == "шт"){
+                    result = innerPrice/innerMass;
+                    ending = '₽ за ' + regular_units[2];
+                }
                 let result2 = result.toFixed(2).toString();
 
                 m.closest('a')!.append(result2+ending);
