@@ -45,25 +45,31 @@ if (!window.shopperExtensionInstalled) {
         var parser = new DOMParser();
 
         var doc = parser.parseFromString(text, "text/html");
-        let ozon_price_range = doc.querySelectorAll<HTMLElement>('.tile-hover-target + div > .tsBodyM > span > span:first-child');
-        let price_range = [];
-        for (const ozon_stuff of ozon_price_range){
-            let single_stuff = ozon_stuff.innerText;
-            let regular_stuff:any = single_stuff.match(/\d+/);
-            let numbers_stuff:any = parseFloat(regular_stuff);
-            price_range.push(numbers_stuff);
+        let ozon_price_range = doc.querySelector<HTMLElement>('[id^="state-searchResultsV2"]');
+        let parsed_range = JSON.parse(ozon_price_range!.dataset.state!);
+        let price_range0;
+        let price_range1;
+        let price_range2;
+        let price_range3;
+        let price_rangeall: any;
+        if(parsed_range.items.length >= 4){
+            price_range0 = parseFloat(parsed_range.items[0].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_range1 = parseFloat(parsed_range.items[1].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_range2 = parseFloat(parsed_range.items[2].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_range3 = parseFloat(parsed_range.items[3].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_rangeall = [price_range0, price_range1, price_range2, price_range3];
         }
-        return [Math.min(...price_range), URL];
+        return [Math.min(...price_rangeall), URL];
     }
     
     const config = { childList: true, subtree: true };
     const observer = new MutationObserver((mutationList, observer) => {
         for (const mutation of mutationList) {
-            mutation.addedNodes.forEach((a) => {
+            for (const a of mutation.addedNodes){
                 if(a instanceof Element){
                     calculate(a);
                 }
-            })
+            }
         }
     })
     setTimeout(
