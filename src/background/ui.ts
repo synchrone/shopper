@@ -1,5 +1,5 @@
 export function createUIMenus(): void {
-    chrome.contextMenus.onClicked.addListener(async (e, tab) => {
+    chrome.contextMenus.onClicked.addListener((e, tab) => {
         if (!e.editable || !tab || !e.menuItemId) {
             return;
         }
@@ -10,8 +10,8 @@ export function createUIMenus(): void {
             return;
         }
 
-        const url = e.frameId ? e.frameUrl : e.pageUrl;
-        const frameId = e.frameId ?? 0;
+        // const url = e.frameId ? e.frameUrl : e.pageUrl;
+        // const frameId = e.frameId ?? 0;
     });
 
     chrome.contextMenus.create(

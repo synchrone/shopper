@@ -5,9 +5,7 @@ const Footer: FunctionComponent = () => {
     return (
         <>
             <h2 id="about">{res('optionsAbout')}</h2>
-            <p>
-                {res('optionsAboutContact')}{' '}
-            </p>
+            <p>{res('optionsAboutContact')} </p>
             <p>{res('optionsAboutLicense')}</p>
             <ul>
                 <li>

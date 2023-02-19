@@ -29,4 +29,5 @@ function startAndReportError(): Promise<void> {
 
 async function start() {
     createUIMenus();
+    await Promise.resolve();
 }

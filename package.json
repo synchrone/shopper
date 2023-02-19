@@ -4,7 +4,8 @@
   "description": "Shopper",
   "main": "index.js",
   "scripts": {
-    "start": "npm run eslint && npm run build-chrome && npm run build-firefox && npm run build-edge && npm run build-safari",
+    "start": "npm run eslint && npm run build",
+    "build": "npm run build-chrome && npm run build-firefox && npm run build-edge && npm run build-safari",
     "build-chrome": "cross-env KW_BROWSER=chrome webpack --mode=production",
     "build-firefox": "cross-env KW_BROWSER=firefox webpack --mode=production",
     "build-edge": "cross-env KW_BROWSER=edge webpack --mode=production",

@@ -39,7 +39,6 @@ class SettingsModel extends TypedEmitter<SettingsModelEvents> {
         });
     }
 
-
     private getShortcuts(): Promise<void> {
         return new Promise((resolve) => {
             chrome.commands.getAll((commands) => {
@@ -84,7 +83,7 @@ class SettingsModel extends TypedEmitter<SettingsModelEvents> {
     }
 
     private handleMessageFromBackgroundPage(message: OptionsPageMessage) {
-
+        message;
     }
 }
 
