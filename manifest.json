@@ -27,9 +27,7 @@
     "page": "pages/options.html",
     "open_in_tab": true
   },
-  "default_locale": "en_US",
-  "commands": {
-  },
+  "default_locale": "ru",
   "content_scripts": [
     {
       "matches": ["https://market.yandex.ru/*"],

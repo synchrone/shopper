@@ -1,0 +1,15 @@
+{
+  "description": { "message": "Расширение Shopper" },
+  "menuSettings": { "message": "Настройки" },
+  "optionsTitle": { "message": "Опции" },
+  "optionsIntro": { "message":  "Это расширение для браузера" },
+  "optionsCancel": { "message": "Отмена" },
+  "optionsShortcuts": { "message": "Комбинации клавиш" },
+  "optionsShortcutsDescription": { "message": "Можно поменять комбинации клавиш в настройках расширения" },
+  "optionsShortcutsDescriptionNoChange": { "message": "Можете использовать эти комбинации" },
+  "optionsShortcutsLink": { "message": "Изменить комбинации клавиш" },
+  "optionsShortcutsManual": { "message": "Чтобы изменить комбинации клавиш, зайдите в настройки расширений и выберите \"Управление горячими клавишами расширений\" в меню-шестерёнке" },
+  "optionsAbout": { "message": "О расширении" },
+  "optionsAboutContact": { "message": "Можете задать вопрос, предложить улучшение или сообщить о проблеме здесь:" },
+  "optionsAboutLicense": { "message": "Расширение лицензировано под GPLv3. Оно включает вот эти замечательные библиотеки:" }
+}
