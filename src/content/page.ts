@@ -40,8 +40,14 @@ if (!window.shopperExtensionInstalled) {
 
     async function fetchOzon(b: string){
         let URL = `https://www.ozon.ru/search/?text=${encodeURIComponent(b)}&from_global=true`;
-        let website = await fetch(URL);
-        let text = await website.text();
+        let redirect = await fetch(URL);
+        let text = await redirect.text();
+        let real_URL = text.match(/location\.replace\((.+)\)/);
+        if(real_URL){
+            let realer_URL = real_URL![1];
+            let website = await fetch(JSON.parse(realer_URL));
+            text = await website.text();
+        }
         var parser = new DOMParser();
 
         var doc = parser.parseFromString(text, "text/html");
@@ -53,10 +59,10 @@ if (!window.shopperExtensionInstalled) {
         let price_range3;
         let price_rangeall: any;
         if(parsed_range.items.length >= 4){
-            price_range0 = parseFloat(parsed_range.items[0].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
-            price_range1 = parseFloat(parsed_range.items[1].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
-            price_range2 = parseFloat(parsed_range.items[2].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
-            price_range3 = parseFloat(parsed_range.items[3].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_range0 = parseFloat(parsed_range.items[0].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
+            price_range1 = parseFloat(parsed_range.items[1].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
+            price_range2 = parseFloat(parsed_range.items[2].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
+            price_range3 = parseFloat(parsed_range.items[3].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
             price_rangeall = [price_range0, price_range1, price_range2, price_range3];
         }
         return [Math.min(...price_rangeall), URL];
@@ -116,8 +122,13 @@ if (!window.shopperExtensionInstalled) {
 
                 try {
                     let price_on_ozon = await fetchOzon(title[i].title);
-                    product_link.append("<br><a href=\""+price_on_ozon[1]+"\"> А на озоне "+price_on_ozon[0]+"₽</a>");
-                }catch(e){
+                    product_link.append(document.createElement('br'));
+                    let p212 = document.createElement('a');
+                    p212.textContent = "A на озоне "+price_on_ozon[0]+"₽";
+                    p212.href = price_on_ozon[1].toString();
+                    product_link.append(p212);
+                }
+                catch(e){
                     console.error('error fetching ozone price', e);
                 }
             }
