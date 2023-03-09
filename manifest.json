@@ -15,12 +15,8 @@
     ]
   },
   "permissions": [
-    "activeTab",
-    "tabs",
-    "contextMenus",
-    "storage",
-    "webNavigation",
-    "<all_urls>"
+    "https://market.yandex.ru/*",
+    "https://www.ozon.ru/*"
   ],
   "content_security_policy": "default-src 'self'",
   "options_ui": {

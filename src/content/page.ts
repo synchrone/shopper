@@ -39,34 +39,29 @@ if (!window.shopperExtensionInstalled) {
     });
 
     async function fetchOzon(b: string){
-        let URL = 'https://www.ozon.ru/category/kofe-9372/?category_was_predicted=true&deny_category_prediction=true&from_global=true&text='+encodeURIComponent(b);
+        let URL = `https://www.ozon.ru/search/?text=${encodeURIComponent(b)}&from_global=true`;
         let website = await fetch(URL);
         let text = await website.text();
         var parser = new DOMParser();
 
         var doc = parser.parseFromString(text, "text/html");
-        try{
-            let ozon_price_range = doc.querySelector<HTMLElement>('[id^="state-searchResultsV2"]');
-            let parsed_range = JSON.parse(ozon_price_range!.dataset.state!);
-            let price_range0;
-            let price_range1;
-            let price_range2;
-            let price_range3;
-            let price_rangeall: any;
-            if(parsed_range.items.length >= 4){
-                price_range0 = parseFloat(parsed_range.items[0].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
-                price_range1 = parseFloat(parsed_range.items[1].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
-                price_range2 = parseFloat(parsed_range.items[2].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
-                price_range3 = parseFloat(parsed_range.items[3].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
-                price_rangeall = [price_range0, price_range1, price_range2, price_range3];
-            }
-            return [Math.min(...price_rangeall), URL];
+        let ozon_price_range = doc.querySelector<HTMLElement>('[id^="state-searchResultsV2"]');
+        let parsed_range = JSON.parse(ozon_price_range!.dataset.state!);
+        let price_range0;
+        let price_range1;
+        let price_range2;
+        let price_range3;
+        let price_rangeall: any;
+        if(parsed_range.items.length >= 4){
+            price_range0 = parseFloat(parsed_range.items[0].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_range1 = parseFloat(parsed_range.items[1].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_range2 = parseFloat(parsed_range.items[2].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_range3 = parseFloat(parsed_range.items[3].mainState.find((element: any) => element.atom.type == "price").atom.price.price.replace(/\D/g,""));
+            price_rangeall = [price_range0, price_range1, price_range2, price_range3];
         }
-        catch (error){
-            console.error(error);
-        }
+        return [Math.min(...price_rangeall), URL];
     }
-    
+
     const config = { childList: true, subtree: true };
     const observer = new MutationObserver((mutationList, observer) => {
         for (const mutation of mutationList) {
@@ -78,8 +73,8 @@ if (!window.shopperExtensionInstalled) {
         }
     })
     setTimeout(
-        () => { 
-            calculate(document); 
+        () => {
+            calculate(document);
             observer.observe(document.querySelector('[data-test-id="virtuoso-item-list"]')!, config);
         }, 1000
     );
@@ -89,21 +84,20 @@ if (!window.shopperExtensionInstalled) {
         const title = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
         for (const [i,m] of price.entries()){
             let innerPrice;
-            let parent_price2 = parent_price[i].previousElementSibling!; 
+            let parent_price2 = parent_price[i].previousElementSibling!;
             if(parent_price2.classList.length > 0){
                 innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
             }
             else{
                 innerPrice = parseFloat(m.innerText.replace(/ /g,""));
             }
-            m.dataset.zoneName 
             let regular_units = title[i].title.match(/ ([\d.]+) ([км]?[гл]|шт)/);
 
             if(regular_units != null){
                 let innerMass = parseFloat(regular_units[1]);
                 let ending = '₽ за 100'+ regular_units[2];
                 if (regular_units[2] == "кг"){
-                    innerMass*=1000; 
+                    innerMass*=1000;
                     ending = '₽ за 100г'
                 }
                 if (regular_units[2] == "л"){
@@ -115,11 +109,16 @@ if (!window.shopperExtensionInstalled) {
                     result = innerPrice/innerMass;
                     ending = '₽ за ' + regular_units[2];
                 }
-                let result2 = result.toFixed(2).toString();
-                let price_on_ozon = await fetchOzon(title[i].title);
-                m.closest('a')!.append(result2+ending);
-                if (price_on_ozon != undefined){
-                    m.closest('a')!.innerHTML += "<br><a href=\""+price_on_ozon[1]+"\"> А на озоне "+price_on_ozon[0]+"₽</a>";
+                let result2 = `${result.toFixed(2).toString()} ${ending}`;
+                let product_link = m.closest('a')!;
+
+                product_link.append(result2);
+
+                try {
+                    let price_on_ozon = await fetchOzon(title[i].title);
+                    product_link.append("<br><a href=\""+price_on_ozon[1]+"\"> А на озоне "+price_on_ozon[0]+"₽</a>");
+                }catch(e){
+                    console.error('error fetching ozone price', e);
                 }
             }
         }
