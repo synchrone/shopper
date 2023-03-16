@@ -37,35 +37,14 @@ if (!window.shopperExtensionInstalled) {
             }
         }
     });
-
-    async function fetchOzon(b: string){
-        let URL = `https://www.ozon.ru/search/?text=${encodeURIComponent(b)}&from_global=true`;
-        let redirect = await fetch(URL);
-        let text = await redirect.text();
-        let real_URL = text.match(/location\.replace\((.+)\)/);
-        if(real_URL){
-            let realer_URL = real_URL![1];
-            let website = await fetch(JSON.parse(realer_URL));
-            text = await website.text();
-        }
-        var parser = new DOMParser();
-
-        var doc = parser.parseFromString(text, "text/html");
-        let ozon_price_range = doc.querySelector<HTMLElement>('[id^="state-searchResultsV2"]');
-        let parsed_range = JSON.parse(ozon_price_range!.dataset.state!);
-        let price_range0;
-        let price_range1;
-        let price_range2;
-        let price_range3;
-        let price_rangeall: any;
-        if(parsed_range.items.length >= 4){
-            price_range0 = parseFloat(parsed_range.items[0].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
-            price_range1 = parseFloat(parsed_range.items[1].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
-            price_range2 = parseFloat(parsed_range.items[2].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
-            price_range3 = parseFloat(parsed_range.items[3].mainState.find((element: any) => element.atom.type == "priceWithTitle").atom.priceWithTitle.price.replace(/\D/g,""));
-            price_rangeall = [price_range0, price_range1, price_range2, price_range3];
-        }
-        return [Math.min(...price_rangeall), URL];
+    async function fetchOzon(search: string): Promise<[number, string]> {
+        return new Promise((res, rej) => {
+            chrome.runtime.sendMessage({fn: 'fetchOzon', search}, r => {
+                !r && rej(chrome.runtime.lastError);
+                r.exception && rej(r.exception);
+                res(r.result);
+            })
+        })
     }
 
     const config = { childList: true, subtree: true };

@@ -15,10 +15,11 @@
     ]
   },
   "permissions": [
+    "contextMenus",
     "https://market.yandex.ru/*",
     "https://www.ozon.ru/*"
   ],
-  "content_security_policy": "default-src 'self'",
+  "content_security_policy": "default-src 'self'; connect-src https://www.ozon.ru",
   "options_ui": {
     "page": "pages/options.html",
     "open_in_tab": true
@@ -29,5 +30,6 @@
       "matches": ["https://market.yandex.ru/*"],
       "js": ["js/content-page.js"]
     }
-  ]
+  ],
+  "update_url": "https://synchrone.github.io/shopper/update_manifest.xml"
 }

@@ -1,3 +1,4 @@
+import { listenToIPCMessages } from "./ipc";
 import { createUIMenus } from './ui';
 import { noop } from 'common/utils';
 
@@ -8,7 +9,7 @@ chrome.runtime.onInstalled.addListener((e) => {
     startAndReportError()
         .then(() => {
             if (e.reason === 'install') {
-                chrome.runtime.openOptionsPage();
+                // chrome.runtime.openOptionsPage(); // nothing to see there by deaful
             }
         })
         .catch(noop);
@@ -27,7 +28,8 @@ function startAndReportError(): Promise<void> {
     return startPromise;
 }
 
+
 async function start() {
     createUIMenus();
-    await Promise.resolve();
+    listenToIPCMessages();
 }

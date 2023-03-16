@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run eslint && npm run build",
-    "sign": "cd dist; for b in $(find . -maxdepth 1 -mindepth 1 -type d); do chromium --pack-extension-key=signing-key.pem --pack-extension=dist/$b; done",
+    "sign": "for b in $(find dist -maxdepth 1 -mindepth 1 -type d); do chromium --pack-extension-key=signing-key.pem --pack-extension=$b; done",
     "pack": "cd dist; for b in $(find . -maxdepth 1 -mindepth 1 -type d); do cd $b; zip -r ../$b.zip .; cd -; done",
     "build": "npm run build-chrome && npm run build-firefox && npm run build-edge && npm run build-safari",
     "build-chrome": "cross-env KW_BROWSER=chrome webpack --mode=production",
