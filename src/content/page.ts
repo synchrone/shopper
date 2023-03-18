@@ -1,3 +1,5 @@
+import { Queue, sleep } from 'modern-async';
+
 export interface ContentScriptMessage {
     action: string;
     url: string;
@@ -37,7 +39,7 @@ if (!window.shopperExtensionInstalled) {
             }
         }
     });
-    async function fetchOzon(search: string): Promise<[number, string]> {
+    async function fetchOzon(search: string): Promise<Array<{price:number, price_per?:number, URL:string}>> {
         return new Promise((res, rej) => {
             chrome.runtime.sendMessage({fn: 'fetchOzon', search}, r => {
                 !r && rej(chrome.runtime.lastError);
@@ -67,6 +69,9 @@ if (!window.shopperExtensionInstalled) {
         const parent_price = a.querySelectorAll('[data-zone-name="price"]');
         const price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
         const title = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
+
+        const queue = new Queue(2)
+
         for (const [i,m] of price.entries()){
             let innerPrice;
             let parent_price2 = parent_price[i].previousElementSibling!;
@@ -99,17 +104,26 @@ if (!window.shopperExtensionInstalled) {
 
                 product_link.append(result2);
 
-                try {
-                    let price_on_ozon = await fetchOzon(title[i].title);
-                    product_link.append(document.createElement('br'));
-                    let p212 = document.createElement('a');
-                    p212.textContent = "A на озоне "+price_on_ozon[0]+"₽";
-                    p212.href = price_on_ozon[1].toString();
-                    product_link.append(p212);
-                }
-                catch(e){
-                    console.error('error fetching ozone price', e);
-                }
+
+                queue.exec(async () => {
+                    try {
+                        let price_on_ozon = await fetchOzon(title[i].title);
+                        product_link.append(document.createElement('br'));
+                        let p212 = document.createElement('a');
+                        if (price_on_ozon[0].price_per){
+                            p212.textContent = "A на озоне "+price_on_ozon[0].price_per+"₽ за 100 г";
+                        }
+                        else{
+                            p212.textContent = "A на озоне "+price_on_ozon[0].price+"₽";
+                        }
+                        p212.href = price_on_ozon[0].URL;
+                        product_link.append(p212);
+                        await sleep(1000);
+                    }
+                    catch(e){
+                        console.error('error fetching ozone price', e);
+                    }
+                })
             }
         }
     }
