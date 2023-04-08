@@ -66,22 +66,15 @@ if (!window.shopperExtensionInstalled) {
         }, 1000
     );
     async function calculate(a: Document|Element){
-        const parent_price = a.querySelectorAll('[data-zone-name="price"]');
-        const price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
-        const title = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
+        const parent_price = a.querySelectorAll('[data-auto="price-block"] > span:nth-of-type(2)');
+        const price = a.querySelectorAll<HTMLElement>('[data-auto="price-block"] ');
+        const title = a.querySelectorAll<HTMLElement>('[data-auto="snippet-title-header"]');
 
-        const queue = new Queue(2)
+        const queue = new Queue(2);
 
         for (const [i,m] of price.entries()){
-            let innerPrice;
-            let parent_price2 = parent_price[i].previousElementSibling!;
-            if(parent_price2.classList.length > 0){
-                innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
-            }
-            else{
-                innerPrice = parseFloat(m.innerText.replace(/ /g,""));
-            }
-            let regular_units = title[i].title.match(/ ([\d.]+) ([км]?[гл]|шт)/);
+            let innerPrice = parseFloat(parent_price[i].textContent!.replace(/\s+/g,"")!);
+            let regular_units = title[i].innerText.match(/ ([\d.]+) ([км]?[гл]|шт)/);
 
             if(regular_units != null){
                 let innerMass = parseFloat(regular_units[1]);

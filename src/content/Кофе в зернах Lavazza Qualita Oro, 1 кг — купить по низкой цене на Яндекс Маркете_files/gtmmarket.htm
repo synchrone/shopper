@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<script async="" src="gtmmarket_data/google-analytics_analytics.js"></script><script>
+    var dataLayer = [];
+    var regexCheckMarket = /(.*)(\.)?market(.*)\.yandex/g;
+
+    var assign = function (defaults, options) {
+        var extended = {};
+        var prop;
+        for (prop in defaults) {
+            if (Object.prototype.hasOwnProperty.call(defaults, prop) && defaults[prop] != '') {
+                extended[prop] = defaults[prop];
+            }
+        }
+        for (prop in options) {
+            if (Object.prototype.hasOwnProperty.call(options, prop) && options[prop] != '') {
+                extended[prop] = options[prop];
+            }
+        }
+        return extended;
+    };
+
+    // Cross-browser event listener
+    var addEvent = function (el, evt, fn) {
+        if (el.addEventListener) {
+            el.addEventListener(evt, fn);
+        } else if (el.attachEvent) {
+            el.attachEvent('on' + evt, function (evt) {
+                fn.call(el, evt);
+            });
+        } else if (typeof el['on' + evt] === 'undefined' || el['on' + evt] === null) {
+            el['on' + evt] = function (evt) {
+                fn.call(el, evt);
+            };
+        }
+    };
+
+    (function (window) {
+        window.dataLayer = window.dataLayer || [];
+
+        var query = window.location.search.substring(1).split("&");
+        var querylength = query.length;
+        var params = {};
+
+        for (var i = 0; i < querylength; ++i) {
+            var getVar = query[i].split("=");
+
+            params[decodeURIComponent(getVar[0])] = typeof (getVar[1]) == "undefined" ? "" : decodeURIComponent(getVar[1]);
+        }
+
+        dataLayer.push(params);
+
+        addEvent(window, 'message', function (message) {
+            // логика пинг-понг
+            if (message.data === 'ready') {
+                window.parent.postMessage('readyForMessage', '*');
+                return;
+            }
+            var dataLayer = window.dataLayer || (window.dataLayer = []); // Safely instantiate dataLayer locally
+            var origin = message.origin;
+
+            try {
+                var messageData = JSON.parse(message.data);
+            } catch (e) {
+                return;
+            }
+
+            messageData = assign(params, messageData);
+
+            if (origin.match(regexCheckMarket)) {
+                dataLayer.push(messageData);
+            }
+        });
+        window.parent.postMessage('readyForMessage', '*');
+    })(window)
+
+</script>
+<!-- Google Tag Manager -->
+<script>(function (w, d, s, l, i) {
+    w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+            new Date().getTime(), event: 'gtm.js'
+    }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-NWV5KMR');</script>
+<!-- End Google Tag Manager -->
+</head>
+<body>
+
+
+</body></html>
