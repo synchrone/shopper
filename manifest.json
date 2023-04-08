@@ -31,5 +31,5 @@
       "js": ["js/content-page.js"]
     }
   ],
-  "update_url": "https://synchrone.github.io/shopper/update_manifest.xml"
+  "update_url": "https://raw.githubusercontent.com/synchrone/shopper/master/update_manifest.xml"
 }
