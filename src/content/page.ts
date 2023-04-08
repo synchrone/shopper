@@ -1,4 +1,8 @@
-import { Queue, sleep } from 'modern-async';
+import * as async from 'async';
+
+async function sleep(ms: number){
+    return new Promise(res => setTimeout(res, ms))
+}
 
 export interface ContentScriptMessage {
     action: string;
@@ -73,7 +77,7 @@ if (!window.shopperExtensionInstalled) {
         let old_price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
         let old_title = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
 
-        const queue = new Queue(2);
+        const queue = async.queue(async (t: () => Promise<any>) => t(), 2);
         if(old_title.length > 0){
             parent_price = old_parent_price;
             price = old_price;
@@ -115,7 +119,7 @@ if (!window.shopperExtensionInstalled) {
                 let result2 = `${result.toFixed(2).toString()} ${ending}`;
                 let product_link = m.closest('a')!;
                 product_link.append(result2);
-                queue.exec(async () => {
+                queue.push(async () => {
                     try {
                         let price_on_ozon;
                         if(old_title.length > 0){
@@ -142,6 +146,7 @@ if (!window.shopperExtensionInstalled) {
                 })
             }
         }
+        await queue.drain()
     }
 }
 
