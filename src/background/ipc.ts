@@ -17,11 +17,13 @@ async function fetchOzon(search: string){
         throw new Error(`cannot find ${search} on ozone`);
     }
     function findpriceperunit(mainState: any[], price:number){
+        
         for (const co of mainState) {
             if (co.atom.type == "labelList"){
                 for (const item of co.atom.labelList.items){
                     if(item.title.includes("100 гр")){
-                        return item.title.match(/^\d+/)[0]
+                        let ta242 = item.title.replace(/\s+/g,"").match(/^\d+/)[0];
+                        return ta242;
                     }
                 }
             }
@@ -43,8 +45,8 @@ async function fetchOzon(search: string){
                 if (kg232[2] == "кг"){
                     regular_kg232*=1000;
                 }
-                
-                return (price/(regular_kg232/100)).toFixed(2);
+                let price_per_un = (price/(regular_kg232/100)).toFixed(2);
+                return price_per_un;
             }
         }
     }
@@ -65,7 +67,7 @@ async function fetchOzon(search: string){
                 price,
                 price_per: findpriceperunit(i.mainState, price),
                 URL
-            };            
+            };         
             return shue;
         })
         if (price_rangeall.every((price: any) => price.price_per)){

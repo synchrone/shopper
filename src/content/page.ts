@@ -100,7 +100,7 @@ if (!window.shopperExtensionInstalled) {
 
                 queue.exec(async () => {
                     try {
-                        let price_on_ozon = await fetchOzon(title[i].title);
+                        let price_on_ozon = await fetchOzon(title[i].innerText);
                         product_link.append(document.createElement('br'));
                         let p212 = document.createElement('a');
                         if (price_on_ozon[0].price_per){
