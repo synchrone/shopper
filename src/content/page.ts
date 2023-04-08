@@ -62,20 +62,40 @@ if (!window.shopperExtensionInstalled) {
     setTimeout(
         () => {
             calculate(document);
-            observer.observe(document.querySelector('[data-grabber="SearchSerp"]')!, config);
+            observer.observe(document.querySelector('[data-test-id="virtuoso-item-list"]')!, config);
         }, 1000
     );
     async function calculate(a: Document|Element){
-        const parent_price = a.querySelectorAll('[data-auto="price-block"] > span:nth-of-type(2)');
-        const price = a.querySelectorAll<HTMLElement>('[data-auto="price-block"] ');
-        const title = a.querySelectorAll<HTMLElement>('[data-auto="snippet-title-header"]');
+        let parent_price = a.querySelectorAll('[data-auto="price-block"] > span:nth-of-type(2)');
+        let price = a.querySelectorAll<HTMLElement>('[data-auto="price-block"] ');
+        let title = a.querySelectorAll<HTMLElement>('[data-auto="snippet-title-header"]');
+        let old_parent_price = a.querySelectorAll('[data-zone-name="price"]');
+        let old_price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
+        let old_title = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
 
         const queue = new Queue(2);
-
+        if(old_title.length > 0){
+            parent_price = old_parent_price;
+            price = old_price;
+        }
         for (const [i,m] of price.entries()){
-            let innerPrice = parseFloat(parent_price[i].textContent!.replace(/\s+/g,"")!);
-            let regular_units = title[i].innerText.match(/ ([\d.]+)\s?([км]?[гл]|шт)/);
-
+            let innerPrice;
+            let parent_price2;
+            let regular_units;
+            if(old_title.length > 0){
+                parent_price2 = parent_price[i].previousElementSibling!;
+                if(parent_price2.classList.length > 0){
+                    innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
+                }
+                else{
+                    innerPrice = parseFloat(m.innerText.replace(/ /g,""));
+                }
+                regular_units = old_title[i].title.match(/ ([\d.]+)\s?([км]?[гл]|шт)/);
+            }
+            else{
+                innerPrice = parseFloat(parent_price[i].textContent!.replace(/\s+/g,"")!);
+                regular_units = title[i].innerText.match(/ ([\d.]+)\s?([км]?[гл]|шт)/);
+            }
             if(regular_units != null){
                 let innerMass = parseFloat(regular_units[1]);
                 let ending = '₽ за 100'+ regular_units[2];
@@ -94,13 +114,16 @@ if (!window.shopperExtensionInstalled) {
                 }
                 let result2 = `${result.toFixed(2).toString()} ${ending}`;
                 let product_link = m.closest('a')!;
-
                 product_link.append(result2);
-
-
                 queue.exec(async () => {
                     try {
-                        let price_on_ozon = await fetchOzon(title[i].innerText);
+                        let price_on_ozon;
+                        if(old_title.length > 0){
+                            price_on_ozon = await fetchOzon(title[i].title);
+                        }
+                        else{
+                            price_on_ozon = await fetchOzon(title[i].innerText);
+                        }
                         product_link.append(document.createElement('br'));
                         let p212 = document.createElement('a');
                         if (price_on_ozon[0].price_per){
