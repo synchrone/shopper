@@ -62,7 +62,7 @@ if (!window.shopperExtensionInstalled) {
     setTimeout(
         () => {
             calculate(document);
-            observer.observe(document.querySelector('[data-test-id="virtuoso-item-list"]')!, config);
+            observer.observe(document.querySelector('[data-grabber="SearchSerp"]')!, config);
         }, 1000
     );
     async function calculate(a: Document|Element){
@@ -74,7 +74,7 @@ if (!window.shopperExtensionInstalled) {
 
         for (const [i,m] of price.entries()){
             let innerPrice = parseFloat(parent_price[i].textContent!.replace(/\s+/g,"")!);
-            let regular_units = title[i].innerText.match(/ ([\d.]+) ([км]?[гл]|шт)/);
+            let regular_units = title[i].innerText.match(/ ([\d.]+)\s?([км]?[гл]|шт)/);
 
             if(regular_units != null){
                 let innerMass = parseFloat(regular_units[1]);
