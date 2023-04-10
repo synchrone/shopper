@@ -94,11 +94,11 @@ if (!window.shopperExtensionInstalled) {
                 else{
                     innerPrice = parseFloat(m.innerText.replace(/ /g,""));
                 }
-                regular_units = old_title[i].title.match(/ ([\d.]+)\s?([км]?[гл]|шт)/);
+                regular_units = old_title[i].title.toLowerCase().match(/([\d.]+)\s?([км]?[гл]|шт)/);
             }
             else{
                 innerPrice = parseFloat(parent_price[i].textContent!.replace(/\s+/g,"")!);
-                regular_units = title[i].innerText.match(/ ([\d.]+)\s?([км]?[гл]|шт)/);
+                regular_units = title[i].innerText.toLowerCase().match(/([\d.]+)\s?([км]?[гл]|шт)/);
             }
             if(regular_units != null){
                 let innerMass = parseFloat(regular_units[1]);
@@ -123,7 +123,7 @@ if (!window.shopperExtensionInstalled) {
                     try {
                         let price_on_ozon;
                         if(old_title.length > 0){
-                            price_on_ozon = await fetchOzon(title[i].title);
+                            price_on_ozon = await fetchOzon(old_title[i].title);
                         }
                         else{
                             price_on_ozon = await fetchOzon(title[i].innerText);
