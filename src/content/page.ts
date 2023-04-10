@@ -1,4 +1,5 @@
 import * as async from 'async';
+import {format_unit_price, ver_check, take_selectors} from '../common/calculate'
 
 async function sleep(ms: number){
     return new Promise(res => setTimeout(res, ms))
@@ -70,64 +71,21 @@ if (!window.shopperExtensionInstalled) {
         }, 1000
     );
     async function calculate(a: Document|Element){
-        let parent_price = a.querySelectorAll('[data-auto="price-block"] > span:nth-of-type(2)');
-        let price = a.querySelectorAll<HTMLElement>('[data-auto="price-block"] ');
-        let title = a.querySelectorAll<HTMLElement>('[data-auto="snippet-title-header"]');
-        let old_parent_price = a.querySelectorAll('[data-zone-name="price"]');
-        let old_price = a.querySelectorAll<HTMLElement>('[data-zone-name="price"] > div > a > div > span > span:first-of-type');
-        let old_title = a.querySelectorAll<HTMLElement>('[data-auto="product-title"]');
-
+        let {parent_price, price, old_title, title} = take_selectors(a);
         const queue = async.queue(async (t: () => Promise<any>) => t(), 2);
-        if(old_title.length > 0){
-            parent_price = old_parent_price;
-            price = old_price;
-        }
+        
         for (const [i,m] of price.entries()){
-            let innerPrice;
-            let parent_price2;
-            let regular_units;
-            if(old_title.length > 0){
-                parent_price2 = parent_price[i].previousElementSibling!;
-                if(parent_price2.classList.length > 0){
-                    innerPrice = parseFloat(parent_price[i].previousElementSibling?.textContent!.replace(/ /g,"")!);
-                }
-                else{
-                    innerPrice = parseFloat(m.innerText.replace(/ /g,""));
-                }
-                regular_units = old_title[i].title.toLowerCase().match(/([\d.]+)\s?([км]?[гл]|шт)/);
-            }
-            else{
-                innerPrice = parseFloat(parent_price[i].textContent!.replace(/\s+/g,"")!);
-                regular_units = title[i].innerText.toLowerCase().match(/([\d.]+)\s?([км]?[гл]|шт)/);
-            }
+            let {regular_units, innerPrice, title_units} = ver_check(i, m, title, old_title, parent_price);
+            
             if(regular_units != null){
-                let innerMass = parseFloat(regular_units[1]);
-                let ending = '₽ за 100'+ regular_units[2];
-                if (regular_units[2] == "кг"){
-                    innerMass*=1000;
-                    ending = '₽ за 100г'
-                }
-                if (regular_units[2] == "л"){
-                    innerMass*=1000;
-                    ending = '₽ за 100мл'
-                }
-                let result = innerPrice/(innerMass/100);
-                if (regular_units[2] == "шт"){
-                    result = innerPrice/innerMass;
-                    ending = '₽ за ' + regular_units[2];
-                }
-                let result2 = `${result.toFixed(2).toString()} ${ending}`;
                 let product_link = m.closest('a')!;
-                product_link.append(result2);
+                product_link.append(format_unit_price(regular_units, innerPrice));
                 queue.push(async () => {
+                    
                     try {
-                        let price_on_ozon;
-                        if(old_title.length > 0){
-                            price_on_ozon = await fetchOzon(old_title[i].title);
-                        }
-                        else{
-                            price_on_ozon = await fetchOzon(title[i].innerText);
-                        }
+                        
+                        let price_on_ozon = await fetchOzon(title_units);
+
                         product_link.append(document.createElement('br'));
                         let p212 = document.createElement('a');
                         if (price_on_ozon[0].price_per){
