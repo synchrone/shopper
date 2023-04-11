@@ -19,7 +19,7 @@
     "https://market.yandex.ru/*",
     "https://www.ozon.ru/*"
   ],
-  "content_security_policy": "default-src 'self'; connect-src https://www.ozon.ru",
+  "content_security_policy": "default-src 'self'; connect-src https://www.ozon.ru https://market.yandex.ru",
   "options_ui": {
     "page": "pages/options.html",
     "open_in_tab": true
@@ -27,7 +27,7 @@
   "default_locale": "ru",
   "content_scripts": [
     {
-      "matches": ["https://market.yandex.ru/*"],
+      "matches": ["https://market.yandex.ru/*", "https://www.ozon.ru/*"],
       "js": ["js/content-page.js"]
     }
   ],
