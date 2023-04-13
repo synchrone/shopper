@@ -108,28 +108,41 @@ if(window.location.hostname == "market.yandex.ru"){
         }
     }
 }
-// if (window.location.hostname == "www.ozon.ru"){
-//     async function fetchYandex(search: string): Promise<String> {
-//         return new Promise((res, rej) => {
-//             chrome.runtime.sendMessage({fn: 'fetchYandex', search}, r => {
-//                 !r && rej(chrome.runtime.lastError);
-//                 r.exception && rej(r.exception);
-//                 res(r.result);
-//             })
-//         })
-//     }
-//     let price_rangeall = OzonPriceCalc(document, search);
-//     (async () => {
-//         try {
-//             let price_on_ozon = await fetchYandex(message_for_ozon);
-//             if (price_on_ozon){
-//                 debugger;
-//             }
-//         }
-//         catch(e){
-//             console.error('error fetching yandex price', e);
-//         }
-//     })();
-// }
+if (window.location.hostname == "www.ozon.ru"){
+    async function fetchYandex(search: string): Promise<String> {
+        return new Promise((res, rej) => {
+            chrome.runtime.sendMessage({fn: 'fetchYandex', search}, r => {
+                !r && rej(chrome.runtime.lastError);
+                r.exception && rej(r.exception);
+                res(r.result);
+            })
+        })
+    }
+    setTimeout(
+        () => {
+            calcOzon();
+        }, 1000
+    );
+    function calcOzon(){
+        let title = document.querySelectorAll('.tile-hover-target > span');
+        let price_gray = document.querySelectorAll('.tile-hover-target + div > div:first-child > span > span:first-child');
+        let price_green = document.querySelectorAll('.tile-hover-target + div > div:first-child > div:first-child');
+        let price = new Set([...price_gray,...price_green]);
+        for (const i of price.entries()){
+            
+        }
+    }
+    // (async () => {
+    //     try {
+    //         let price_on_ozon = await fetchYandex();
+    //         if (price_on_ozon){
+    //             debugger;
+    //         }
+    //     }
+    //     catch(e){
+    //         console.error('error fetching yandex price', e);
+    //     }
+    // })();
+}
 
 export {};
