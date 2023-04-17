@@ -37,13 +37,29 @@ async function fetchYandex(search: string){
     var parser = new DOMParser();
     var doc = parser.parseFromString(text, "text/html");
     
+    let price_rangeall;
     let {parent_price, price, old_title, title} = take_selectors(doc);  
     for (const [i,m] of price.entries()){
         let {regular_units, innerPrice} = ver_check(i, m, title, old_title, parent_price);
 
         if(regular_units != null){
-            let text_product_linka = format_unit_price(regular_units, innerPrice);
-            return text_product_linka;
+            let innerMass = parseFloat(regular_units[1]);
+            if (regular_units[2] == "кг"){
+                innerMass*=1000;
+            }
+            if (regular_units[2] == "л"){
+                innerMass*=1000;
+            }
+            let dividinger = innerPrice/(innerMass/100);
+            if (regular_units[2] == "шт"){
+                dividinger = innerPrice/innerMass;
+            }
+            let price1 = [];
+            price1.push(dividinger.toFixed(2));
+            price1.sort((a: any,b: any) => a - b);
+            price_rangeall = [price1, result.url];
         }
     }
+    return price_rangeall;
+    
 }

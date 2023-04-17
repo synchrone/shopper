@@ -121,28 +121,38 @@ if (window.location.hostname == "www.ozon.ru"){
     setTimeout(
         () => {
             calcOzon();
-        }, 1000
+        }, 3000
     );
-    function calcOzon(){
-        let title = document.querySelectorAll('.tile-hover-target > span');
-        let price_gray = document.querySelectorAll('.tile-hover-target + div > div:first-child > span > span:first-child');
-        let price_green = document.querySelectorAll('.tile-hover-target + div > div:first-child > div:first-child');
-        let price = new Set([...price_gray,...price_green]);
-        for (const i of price.entries()){
-            
+    async function calcOzon(){
+        let title = document.querySelectorAll<HTMLElement>('.tile-hover-target > span');
+        let price = document.querySelectorAll<HTMLElement>('.tile-hover-target + div > div:first-child > span > span:first-child, .tile-hover-target + div > div:first-child > div:first-child');
+        const queue = async.queue(async (t: () => Promise<any>) => t(), 2);
+        for (const [i,m] of price.entries()){
+            let {regular_units, innerPrice, title_units} = ver_check(i, m, title, undefined, price);
+            if(regular_units != null){
+                m.append(document.createElement('br'));
+                m.append(format_unit_price(regular_units, innerPrice));
+
+                queue.push(async () => {
+                    try {
+                        let price_on_ozon = await fetchYandex(title_units);
+                        m.append(document.createElement('br'));
+                        let p212 = document.createElement('a');
+                        if (price_on_ozon[0]){
+                            p212.textContent = "A на яндексе "+price_on_ozon[0]+"₽ за 100г";
+                        }
+                        p212.href = price_on_ozon[1];
+                        m.append(p212);
+                        await sleep(1000);
+                    }
+                    catch(e){
+                        console.error('error fetching yandex price', e);
+                    }
+                });
+            }
         }
+        await queue.drain()
     }
-    // (async () => {
-    //     try {
-    //         let price_on_ozon = await fetchYandex();
-    //         if (price_on_ozon){
-    //             debugger;
-    //         }
-    //     }
-    //     catch(e){
-    //         console.error('error fetching yandex price', e);
-    //     }
-    // })();
 }
 
 export {};
