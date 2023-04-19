@@ -46,9 +46,11 @@ async function fetchYandex(search: string){
             let innerMass = parseFloat(regular_units[1]);
             if (regular_units[2] == "кг"){
                 innerMass*=1000;
+                regular_units[2] = "гр";
             }
             if (regular_units[2] == "л"){
                 innerMass*=1000;
+                regular_units[2] = "мл";
             }
             let dividinger = innerPrice/(innerMass/100);
             if (regular_units[2] == "шт"){
@@ -57,7 +59,7 @@ async function fetchYandex(search: string){
             let price1 = [];
             price1.push(dividinger.toFixed(2));
             price1.sort((a: any,b: any) => a - b);
-            price_rangeall = [price1, result.url];
+            price_rangeall = [price1, result.url, regular_units[2]];
         }
     }
     return price_rangeall;

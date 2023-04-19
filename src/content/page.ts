@@ -125,7 +125,7 @@ if (window.location.hostname == "www.ozon.ru"){
     );
     async function calcOzon(){
         let title = document.querySelectorAll<HTMLElement>('.tile-hover-target > span');
-        let price = document.querySelectorAll<HTMLElement>('.tile-hover-target + div > div:first-child > span > span:first-child, .tile-hover-target + div > div:first-child > div:first-child');
+        let price = document.querySelectorAll<HTMLElement>('.tile-hover-target + div > div:first-child > span:first-child > span:first-child, .widget-search-result-container > div:first-child > div > div > div:first-child > div:first-child');
         const queue = async.queue(async (t: () => Promise<any>) => t(), 2);
         for (const [i,m] of price.entries()){
             let {regular_units, innerPrice, title_units} = ver_check(i, m, title, undefined, price);
@@ -135,15 +135,20 @@ if (window.location.hostname == "www.ozon.ru"){
 
                 queue.push(async () => {
                     try {
-                        let price_on_ozon = await fetchYandex(title_units);
+                        let price_on_yandex = await fetchYandex(title_units);
                         m.append(document.createElement('br'));
                         let p212 = document.createElement('a');
-                        if (price_on_ozon[0]){
-                            p212.textContent = "A на яндексе "+price_on_ozon[0]+"₽ за 100г";
+                        if (price_on_yandex[0]){
+                            if (price_on_yandex[2] == "шт"){
+                                p212.textContent = price_on_yandex[0]+"₽ за шт на Яндексе";
+                            }
+                            p212.textContent = price_on_yandex[0]+"₽ за 100"+price_on_yandex[2]+" на Яндексе";
                         }
-                        p212.href = price_on_ozon[1];
+                        p212.href = price_on_yandex[1];
+                        p212.style.color = 'gray';
+                        p212.style.textDecoration = 'underline';
                         m.append(p212);
-                        await sleep(1000);
+                        await sleep(2567);
                     }
                     catch(e){
                         console.error('error fetching yandex price', e);
