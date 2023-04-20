@@ -145,8 +145,9 @@ if (window.location.hostname == "www.ozon.ru"){
                             p212.textContent = price_on_yandex[0]+"₽ за 100"+price_on_yandex[2]+" на Яндексе";
                         }
                         p212.href = price_on_yandex[1];
-                        p212.style.color = 'gray';
+                        p212.style.color = 'white';
                         p212.style.textDecoration = 'underline';
+                        p212.style.textShadow = '1px 1px 1px #373737';
                         m.append(p212);
                         await sleep(2567);
                     }
